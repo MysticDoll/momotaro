@@ -5,6 +5,7 @@
   var console = {};
 
   console.log = function(arg){
+    window.console.log(arg);
     document.querySelector("div.logArea").innerHTML += `<p>${arg}</p>`;
   }
 
@@ -36,8 +37,9 @@
       if(this.equipments.pop() instanceof Kibidango){
         this.party.push(target);
         console.log(`きびだんごで${target.type}を仲間にした`);
+        return this;
       } else {
-        throw new Error(`${this.name} has no Kibidango`);
+        return Promise.reject(new Error(`${this.name} has no Kibidango`));
       }
     }
 
@@ -47,7 +49,7 @@
       }).length === 3){
         console.log("鬼を倒したのでめでたし");
       } else {
-        throw new Error(`${this.name} does not have enough members of party`);
+        return Promise.reject(new Error(`${this.name} does not have enough members of party`));
       }
     }
 
@@ -64,9 +66,10 @@
       }
 
       if(!(target instanceof Momotaro)){
-        throw new Error(`${target.name} is not Momotaro`);
+        return Promise.reject(new Error(`${target.name} is not Momotaro`));
       }
       console.log(`${this.name}は${target.name}にきびだんごを三つ渡した`);
+      return target;
     }
   }
 
@@ -76,7 +79,7 @@
         console.log(`${this.name}は桃を割った。${peach.inner.name}が誕生`);
         return peach.inner;
       } else {
-        throw new Error(`${peach} is not Peach`);
+        return Promise.reject(new Error(`${peach} is not Peach`));
       }
     }
   }
@@ -137,8 +140,7 @@
       setTimeout(function(){
         console.log(`${momotaro.name} は鬼退治に行きます`);
         momotaro.where = "Along the way to Onigashima";
-        granma.passDango(momotaro); 
-        resolve(momotaro);
+        resolve(granma.passDango(momotaro));
       }, delayTime);
     });
   };
@@ -146,8 +148,7 @@
   var meetMonkey = function(momotaro){
     return new Promise(function(resolve){
       setTimeout(function(){
-        momotaro.invite(new Animal("Saru"));
-        resolve(momotaro);
+        resolve(momotaro.invite(new Animal("Saru")));
       }, delayTime);
     });
   };
@@ -155,8 +156,7 @@
   var meetDog = function(momotaro){
     return new Promise(function(resolve){
       setTimeout(function(){
-        momotaro.invite(new Animal("Inu"));
-        resolve(momotaro);
+        resolve(momotaro.invite(new Animal("Inu")));
       }, delayTime);
     });
   };
@@ -164,14 +164,13 @@
   var meetBird = function(momotaro){
     return new Promise(function(resolve){
       setTimeout(function(){
-        momotaro.invite(new Animal("Kiji"));
-        resolve(momotaro);
+        resolve(momotaro.invite(new Animal("Kiji")));
       }, delayTime);
     });
   };
   
   var arriveOnigashima = function(momotaro){
-    momotaro.beatOni();
+    return momotaro.beatOni();
   };
 
   goOut().then(donburako)
